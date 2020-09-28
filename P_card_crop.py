@@ -22,7 +22,7 @@ def add_padding_to_bounding_rect(rect: tuple) -> tuple:
     return rect[0] - PADDING, rect[1] - PADDING, rect[2] + PADDING, rect[3] + PADDING
 
 
-def display_result(p: str,name: str,dir=r'D:\citizenIdData\train\\'):
+def display_result(p: str,name: str,dir=r'D:\citizenIdData\train\\',interactive=True):
     img = cv2.imread(p)
     edge = cv2.Canny(cv2.erode(img,np.ones((7, 7), np.uint8)), 15, 30)
     fig, ax = plt.subplots(1, figsize=(12, 8))
@@ -54,12 +54,12 @@ def display_result(p: str,name: str,dir=r'D:\citizenIdData\train\\'):
 
     for r in rect1:
        cv2.rectangle(drawing, (r[0], r[1]), (r[0] +r[2],r[1] + r[3]), (0, 0, 255), 2)
-
-    # cv2.imshow(p, drawing)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    if interactive:
+        cv2.imshow(p, drawing)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 path = r'D:\citizenIdData\Train_DataSet'
-files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
-for file in files:
-    display_result(path + '\\' + file,file)
+# files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
+# for file in files:
+display_result(path + '\\' +'0f370bf7264648ee93f87df1066b4945.jpg','0f370bf7264648ee93f87df1066b4945.jpg')

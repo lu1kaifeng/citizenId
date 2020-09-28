@@ -2,3 +2,7 @@ opencv
 matplotlib
 numpy
 nms
+scikit-image
+keras
+shapely
+deprecated
