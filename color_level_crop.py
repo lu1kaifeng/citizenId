@@ -53,8 +53,6 @@ def display_result(p: str, name: str, dir=r'D:\citizenIdData\train\\'):
 
     i = 0
     for r in rect:
-        print(r)
-        print(dir + name + r'-' + str(i) + '.jpg')
         cv2.rectangle(drawing, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
         cv2.imwrite(dir + name + r'-' + str(i) + '.jpg', img[r[1]:r[1] + r[3], r[0]:r[0] + r[2]])
         i = i + 1
