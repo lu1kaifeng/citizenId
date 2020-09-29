@@ -38,5 +38,5 @@ ii = 0
 for file in files:
     if is_correct_crop( file):
         i = i + 1
-
-    print(i)
+    ii = ii + 1
+    print(i / ii)
