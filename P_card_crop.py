@@ -40,7 +40,6 @@ def add_padding_to_bounding_rect(rect: tuple) -> tuple:
 def display_result(p: str, name: str, dir=r'D:\citizenIdData\train\\', interactive=True):
     img = cv2.imread(p)
     edge = cv2.Canny(cv2.erode(img, np.ones((7, 7), np.uint8)), 15, 30)
-    lines = cv2.HoughLines(edge, 1, np.pi / 180, 200)
     fig, ax = plt.subplots(1, figsize=(12, 8))
 
     # Find contours
