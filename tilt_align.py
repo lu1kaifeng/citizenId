@@ -34,6 +34,33 @@ class ctpn_coordinate_pair:
         else:
             return False
 
+    def rotate_by_angle(self,angle: float):
+        # inverse matrix of simple rotation is reversed rotation.
+        M_inv = cv2.getRotationMatrix2D((100 / 2, 300 / 2), angle, 1)
+
+        # points
+        points = np.array([[self.x1, self.y1],
+                           [self.x2, self.y2]])
+        # add ones
+        ones = np.ones(shape=(len(points), 1))
+
+        points_ones = np.hstack([points, ones])
+
+        points = M_inv.dot(points_ones.T).T
+        pair = ctpn_coordinate_pair()
+        pair.x1 = int(points[0][0])
+        pair.y1 = int(points[0][1])
+        pair.x2 = int(points[1][0])
+        pair.y2 = int(points[1][1])
+        return pair
+
+    def to_context(self,context):
+        pair = ctpn_coordinate_pair()
+        pair.x1 = self.x1 - context.x1
+        pair.y1 = self.y1 - context.y1
+        pair.x2 = self.x2 - context.x1
+        pair.y2 = self.y2 - context.y1
+        return pair
 
 class ctpn_text_line:
     elem = []

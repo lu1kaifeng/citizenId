@@ -70,7 +70,7 @@ def display_result(img, interactive=True):
         pair.x2 = r[0] + r[2]
         pair.y2 = r[1] + r[3]
         rectObj.append(pair)
-        imgs.append(img[r[1]:r[1] + r[3], r[0]:r[0] + r[2]])
+        imgs.append(np.copy(img[r[1]:r[1] + r[3], r[0]:r[0] + r[2]]))
         i = i + 1
 
     for r in rect1:
