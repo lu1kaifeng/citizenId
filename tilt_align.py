@@ -2,7 +2,7 @@ import math
 from typing import List
 
 import cv2
-
+import numpy as np
 
 class ctpn_coordinate_pair:
     # (y1,x1,y2,x2)
@@ -10,12 +10,29 @@ class ctpn_coordinate_pair:
     y1 = None
     x2 = None
     y2 = None
+    odd = 0.0
 
-    def __init__(self, t=(None, None, None, None)):
-        self.y1 = t[0]
-        self.x1 = t[1]
-        self.y2 = t[2]
-        self.x2 = t[3]
+    def __init__(self, t=(None, None, None, None),odd=0.0):
+        self.y1 = t[1]
+        self.x1 = t[0]
+        self.y2 = t[3]
+        self.x2 = t[2]
+        self.odd = odd
+
+    def get_angle(self):
+        return -math.atan((self.y1 - self.y2) / (self.x2 - self.x1)) * 180 / math.pi
+
+    def get_length(self):
+        return math.sqrt(math.pow(self.y2 - self.y1, 2) + math.pow(self.x2 - self.x1, 2))
+
+    def is_in_area(self,area):
+        if (area.x2 > self.x1 > area.x1 and
+            area.x2 > self.x2 > area.x1) and \
+                (area.y2 > self.y1 > area.y1 and
+                 area.y2 > self.y2 > area.y1):
+            return True
+        else:
+            return False
 
 
 class ctpn_text_line:
@@ -67,13 +84,17 @@ def get_lines(boxes: list):
     return list(map(lambda x: ctpn_text_line(x), filter(lambda x: len(x) > 3, lines)))
 
 
-def get_rotation_angle(lines: List[ctpn_text_line]):
-    return max(lines,key=lambda x:x.get_length()).get_angle()
-    #Not Working
-    # total_len = 0.0
-    # for line in lines:
-    #     total_len = total_len + line.get_length()
-    # angle = 0.0
-    # for line in lines:
-    #     angle = angle  + line.get_angle() * line.get_length()
-    # return angle / total_len
+def get_rotation_angle(lines: List[ctpn_coordinate_pair]):
+    total_len = 0.0
+    for line in lines:
+        total_len = total_len + math.pow(line.get_length(),3)*line.odd
+    angle = 0.0
+    for line in lines:
+        angle = angle  + line.get_angle() * math.pow(line.get_length(),3)*line.odd
+    return angle / total_len
+
+def rotate_image(image, angle):
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result

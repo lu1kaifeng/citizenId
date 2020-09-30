@@ -7,6 +7,7 @@ import numpy as np
 import random as rng
 import matplotlib.pyplot as plt
 from rect_op import merge_bounding_boxes
+from tilt_align import ctpn_coordinate_pair
 
 
 def adjust_gamma(image, gamma=1.0):
@@ -36,8 +37,8 @@ def add_padding_to_bounding_rect(rect: tuple) -> tuple:
     return rect[0] - PADDING , rect[1] - PADDING, rect[2] +2 *PADDING , rect[3] + 2*PADDING
 
 
-def display_result(p: str, name: str, dir=r'D:\citizenIdData\train\\', interactive=True):
-    img = cv2.imread(p)
+def display_result(img, interactive=True):
+
     edge = cv2.Canny(cv2.erode(img, np.ones((7, 7), np.uint8)), 15, 30)
     fig, ax = plt.subplots(1, figsize=(12, 8))
 
@@ -59,10 +60,17 @@ def display_result(p: str, name: str, dir=r'D:\citizenIdData\train\\', interacti
     rect = list(filter(lambda x: not is_in_rect(x, rect), rect))
     rect1 = merge_bounding_boxes(rect)
     i = 0
+    imgs = []
+    rectObj = []
     for r in rect1:
-        r = add_padding_to_bounding_rect(r)
         cv2.rectangle(drawing, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (0, 255, 0), 2)
-        cv2.imwrite(dir + name + r'-' + str(i) + '.jpg', img[r[1]:r[1] + r[3], r[0]:r[0] + r[2]])
+        pair = ctpn_coordinate_pair()
+        pair.x1 = r[0]
+        pair.y1=r[1]
+        pair.x2 = r[0] + r[2]
+        pair.y2 = r[1] + r[3]
+        rectObj.append(pair)
+        imgs.append(img[r[1]:r[1] + r[3], r[0]:r[0] + r[2]])
         i = i + 1
 
     for r in rect1:
@@ -71,13 +79,14 @@ def display_result(p: str, name: str, dir=r'D:\citizenIdData\train\\', interacti
         for r in rect:
             cv2.rectangle(drawing, (r[0], r[1]), (r[0] + r[2], r[1] + r[3]), (255, 0, 0), 2)
     if interactive:
-        cv2.imshow(p, drawing)
+        cv2.imshow('imgg', drawing)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+    return rectObj,imgs
 
 
-path = r'D:\citizenIdData\Train_DataSet'
-path1 = '00bb30d5ac0448a192ba2bfd6d5c99a2.jpg'
-files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
-for file in files:
-    display_result(path + '\\' + file, file,interactive=False)
+# path = r'D:\citizenIdData\Train_DataSet'
+# path1 = '00bb30d5ac0448a192ba2bfd6d5c99a2.jpg'
+# files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
+# for file in files:
+#     display_result(cv2.imread(path + '\\' + file), file,interactive=False)

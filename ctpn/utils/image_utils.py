@@ -50,7 +50,10 @@ def load_image_gt(image_id, image_path, output_size, gt_boxes=None,
     gt_boxes：图像缩放及padding后对于的GT 边框坐标 [N,(y1,x1,y2,x2)]
     """
     # 加载图像
-    image = load_image(image_path)
+    if type(image_path) == str:
+        image = load_image(image_path)
+    else:
+        image = image_path
     # 随机裁剪
     if random_crop and random.random() >= 0.5:
         min_x, max_x = np.min(gt_quadrilaterals[:, ::2]), np.max(gt_quadrilaterals[:, ::2])

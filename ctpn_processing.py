@@ -8,7 +8,7 @@ import numpy as np
 import random as rng
 import matplotlib.pyplot as plt
 from rect_op import merge_bounding_boxes
-from tilt_align import get_lines, get_rotation_angle
+from tilt_align import get_lines, get_rotation_angle, ctpn_coordinate_pair, rotate_image
 
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -25,14 +25,10 @@ m.load_weights(config.WEIGHT_PATH, by_name=True)
 m.summary()
 
 
-def rotate_image(image, angle):
-    image_center = tuple(np.array(image.shape[1::-1]) / 2)
-    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-    return result
 
 
-def is_correct_crop(name: str, dir=r'D:\citizenIdData\train'):
+
+def get_text_lines(name: str, dir=r'D:\citizenIdData\Train_DataSet'):
     # 加载图片
     image, image_meta, _, _ = image_utils.load_image_gt(np.random.randint(10),
                                                         dir + '\\' + name,
@@ -56,13 +52,12 @@ def is_correct_crop(name: str, dir=r'D:\citizenIdData\train'):
     ax = fig.add_subplot(1, 1, 1)
     visualize.display_polygons(image, text_lines[:boxes_num, :8], text_lines[:boxes_num, 8],
                                ax=ax)
-    lines = get_lines(text_boxes)
+    lines = list(map(lambda x: ctpn_coordinate_pair(x),text_lines))
     for r in text_boxes:
         # (y1,x1,y2,x2)
         cv2.rectangle(image, (r[1], r[0]), (r[3], r[2]), (0, 255, 0), 2)
     for r in lines:
         # (y1,x1,y2,x2)
-        r = r.get_cross_line()
         cv2.line(image, (r.x1, r.y1), (r.x2, r.y2), (255, 0, 0), 2)
 
     image = rotate_image(image, get_rotation_angle(lines))
@@ -76,5 +71,5 @@ path = r'D:\citizenIdData\Train_DataSet'
 files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
 
 for file in files:
-    is_correct_crop(file + '-0.jpg')
-    is_correct_crop(file + '-1.jpg')
+    get_text_lines(file)
+    # is_correct_crop(file + '-1.jpg')
