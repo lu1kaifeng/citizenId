@@ -7,21 +7,35 @@ import numpy
 
 from CtpnPreprocessor import CtpnPreProcessor
 from EmblemMatcher import EmblemMatcher
-from FrontTextMatcher import FrontTextMatcher
 from card_crop import display_result
 from label_processing import is_correct_crop
 from perspective_zoom import perspective_zoomed_image
+from text_seg import get_text_img
 from tilt_align import ctpn_coordinate_pair, rotate_image, get_rotation_angle
 
-#text_matcher = FrontTextMatcher()
+
+def click_event(event, x, y, flags, params):
+    # checking for left mouse clicks
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # displaying the coordinates
+        # on the Shell
+        print(x, ' ', y)
+
+        # checking for right mouse clicks
+    if event == cv2.EVENT_RBUTTONDOWN:
+        # displaying the coordinates
+        # on the Shell
+        print(x, ' ', y)
+
+
+# text_matcher = FrontTextMatcher()
 preprocessor = CtpnPreProcessor()
 emblem_matcher = EmblemMatcher()
-
 
 interactive = True
 path = r'D:\citizenIdData\Train_DataSet'
 files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
-#files=['0019905ad50e451e943d05ba5e090f72.jpg']
+# files=['0019905ad50e451e943d05ba5e090f72.jpg']
 for file in files:
     img = cv2.imread(path + '\\' + file)
     sides, imgs = display_result(img, False)
@@ -50,11 +64,15 @@ for file in files:
         p1 = rotate_image(p1, get_rotation_angle(p1_lines))
         p1_lines = list(map(lambda x: x.to_context(sides[1]).rotate_by_angle(get_rotation_angle(p1_lines)), p1_lines))
         p1, p1_lines = perspective_zoomed_image(p1, p1_lines)
-        flip_back,flip_front,front,front_lines,back,back_lines = emblem_matcher.side_orientation_recog(p0,p0_lines,p1,p1_lines,interactive)
+        flip_back, flip_front, front, front_lines, back, back_lines = emblem_matcher.side_orientation_recog(p0,
+                                                                                                            p0_lines,
+                                                                                                            p1,
+                                                                                                            p1_lines,
+                                                                                                            interactive)
         if flip_back:
             back = rotate_image(back, 180)
             back_lines = list(
-                 map(lambda x: x.vertical_flip(back.shape[0],back.shape[1]), back_lines))
+                map(lambda x: x.vertical_flip(back.shape[0], back.shape[1]), back_lines))
         if flip_front:
             front = rotate_image(front, 180)
             front_lines = list(
@@ -68,8 +86,11 @@ for file in files:
                 cv2.line(front, (r.x1, r.y1), (r.x2, r.y2), (0, 255, 0), 2)
 
             cv2.imshow('back', back)
+            cv2.setMouseCallback('back', click_event)
             cv2.imshow('front', front)
+            cv2.setMouseCallback('front', click_event)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+            get_text_img(front,back)
     else:
         continue

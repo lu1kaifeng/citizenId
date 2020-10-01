@@ -123,8 +123,6 @@ class EmblemMatcher:
                 avg = avg + math.sqrt(
                     math.pow(img2_pts[i][1] - img1_pts[i][1], 2) + math.pow(img2_pts[i][0] - img1_pts[i][0], 2))
             return avg / min(len(img1_pts), len(img2_pts))
-        print(calc_avg_distance(front))
-        print(calc_avg_distance(rotate_image(front,180)))
         if calc_avg_distance(front) > calc_avg_distance(rotate_image(front,180)):
             flip_front = True
         else:
