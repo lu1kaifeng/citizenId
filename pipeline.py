@@ -5,15 +5,19 @@ from os.path import isfile, join
 import cv2
 
 from CtpnPreprocessor import CtpnPreProcessor
+from EmblemMatcher import EmblemMatcher
 from card_crop import display_result
 from label_processing import is_correct_crop
+from perspective_zoom import perspective_zoomed_image
 from tilt_align import ctpn_coordinate_pair, rotate_image, get_rotation_angle
 
 preprocessor = CtpnPreProcessor()
+emblem_matcher = EmblemMatcher()
 
 interactive = True
 path = r'D:\citizenIdData\Train_DataSet'
 files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
+#files=['0019905ad50e451e943d05ba5e090f72.jpg']
 for file in files:
     img = cv2.imread(path + '\\' + file)
     sides, imgs = display_result(img, False)
@@ -37,9 +41,12 @@ for file in files:
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         p0 = rotate_image(p0, get_rotation_angle(p0_lines))
-        p0_lines = list(map(lambda x: x.to_context(sides[0]).rotate_by_angle(get_rotation_angle(p0_lines)),p0_lines))
+        p0_lines = list(map(lambda x: x.to_context(sides[0]).rotate_by_angle(get_rotation_angle(p0_lines)), p0_lines))
+        p0, p0_lines = perspective_zoomed_image(p0, p0_lines)
         p1 = rotate_image(p1, get_rotation_angle(p1_lines))
         p1_lines = list(map(lambda x: x.to_context(sides[1]).rotate_by_angle(get_rotation_angle(p1_lines)), p1_lines))
+        p1, p1_lines = perspective_zoomed_image(p1, p1_lines)
+        print(emblem_matcher.side_orientation_recog(p0,p1,interactive))
         if interactive:
             for r in p0_lines:
                 # (y1,x1,y2,x2)
