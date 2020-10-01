@@ -4,6 +4,7 @@ from typing import List
 import cv2
 import numpy as np
 
+
 class ctpn_coordinate_pair:
     # (y1,x1,y2,x2)
     x1 = None
@@ -12,7 +13,7 @@ class ctpn_coordinate_pair:
     y2 = None
     odd = 0.0
 
-    def __init__(self, t=(None, None, None, None),odd=0.0):
+    def __init__(self, t=(None, None, None, None), odd=0.0):
         self.y1 = t[1]
         self.x1 = t[0]
         self.y2 = t[3]
@@ -25,7 +26,7 @@ class ctpn_coordinate_pair:
     def get_length(self):
         return math.sqrt(math.pow(self.y2 - self.y1, 2) + math.pow(self.x2 - self.x1, 2))
 
-    def is_in_area(self,area):
+    def is_in_area(self, area):
         if (area.x2 > self.x1 > area.x1 and
             area.x2 > self.x2 > area.x1) and \
                 (area.y2 > self.y1 > area.y1 and
@@ -34,7 +35,7 @@ class ctpn_coordinate_pair:
         else:
             return False
 
-    def rotate_by_angle(self,angle: float):
+    def rotate_by_angle(self, angle: float):
         # inverse matrix of simple rotation is reversed rotation.
         M_inv = cv2.getRotationMatrix2D((100 / 2, 300 / 2), angle, 1)
 
@@ -54,7 +55,7 @@ class ctpn_coordinate_pair:
         pair.y2 = int(points[1][1])
         return pair
 
-    def to_context(self,context):
+    def to_context(self, context):
         pair = ctpn_coordinate_pair()
         pair.x1 = self.x1 - context.x1
         pair.y1 = self.y1 - context.y1
@@ -62,13 +63,14 @@ class ctpn_coordinate_pair:
         pair.y2 = self.y2 - context.y1
         return pair
 
-    def vertical_flip(self,image_height,image_width):
+    def vertical_flip(self, image_height, image_width):
         pair = ctpn_coordinate_pair()
         pair.x1 = image_width - self.x1
         pair.y1 = image_height - self.y1
         pair.x2 = image_width - self.x2
         pair.y2 = image_height - self.y2
         return pair
+
 
 class ctpn_text_line:
     elem = []
@@ -122,11 +124,12 @@ def get_lines(boxes: list):
 def get_rotation_angle(lines: List[ctpn_coordinate_pair]):
     total_len = 0.0
     for line in lines:
-        total_len = total_len + math.pow(line.get_length(),3)*line.odd
+        total_len = total_len + math.pow(line.get_length(), 3) * line.odd
     angle = 0.0
     for line in lines:
-        angle = angle  + line.get_angle() * math.pow(line.get_length(),3)*line.odd
+        angle = angle + line.get_angle() * math.pow(line.get_length(), 3) * line.odd
     return angle / total_len
+
 
 def rotate_image(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
