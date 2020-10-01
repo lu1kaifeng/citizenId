@@ -46,16 +46,20 @@ for file in files:
         p1 = rotate_image(p1, get_rotation_angle(p1_lines))
         p1_lines = list(map(lambda x: x.to_context(sides[1]).rotate_by_angle(get_rotation_angle(p1_lines)), p1_lines))
         p1, p1_lines = perspective_zoomed_image(p1, p1_lines)
-        print(emblem_matcher.side_orientation_recog(p0,p1,interactive))
+        flip_back,front,front_lines,back,back_lines = emblem_matcher.side_orientation_recog(p0,p0_lines,p1,p1_lines,interactive)
+        if flip_back:
+            back = rotate_image(back, 180)
+            back_lines = list(
+                 map(lambda x: x.vertical_flip(back.shape[0],back.shape[1]), back_lines))
         if interactive:
-            for r in p0_lines:
+            for r in back_lines:
                 # (y1,x1,y2,x2)
-                cv2.line(p0, (r.x1, r.y1), (r.x2, r.y2), (255, 0, 0), 2)
-            for r in p1_lines:
+                cv2.line(back, (r.x1, r.y1), (r.x2, r.y2), (255, 0, 0), 2)
+            for r in front_lines:
                 # (y1,x1,y2,x2)
-                cv2.line(p1, (r.x1, r.y1), (r.x2, r.y2), (0, 255, 0), 2)
-            cv2.imshow('p0', p0)
-            cv2.imshow('p1', p1)
+                cv2.line(front, (r.x1, r.y1), (r.x2, r.y2), (0, 255, 0), 2)
+            cv2.imshow('back', back)
+            cv2.imshow('front', front)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
     else:

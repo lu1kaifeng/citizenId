@@ -62,6 +62,14 @@ class ctpn_coordinate_pair:
         pair.y2 = self.y2 - context.y1
         return pair
 
+    def vertical_flip(self,image_height,image_width):
+        pair = ctpn_coordinate_pair()
+        pair.x1 = image_width - self.x1
+        pair.y1 = image_height - self.y1
+        pair.x2 = image_width - self.x2
+        pair.y2 = image_height - self.y2
+        return pair
+
 class ctpn_text_line:
     elem = []
     first = None

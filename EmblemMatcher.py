@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 
+from tilt_align import rotate_image
+
+
 class EmblemMatcher:
     emblem_img = cv2.imread('./data/emblem.png')
 
@@ -40,17 +43,17 @@ class EmblemMatcher:
             cv2.destroyAllWindows()
         return good_matches,kp2
 
-    def side_orientation_recog(self,p0,p1,interactive=False):
+    def side_orientation_recog(self,p0,p0_lines,p1,p1_lines,interactive=False):
         p0_rows, p0_cols,_ = p0.shape
         p1_rows, p1_cols,_ = p1.shape
         p0_matches,p0_kp = self.flann_match(p0,interactive=interactive)
         p1_matches,p1_kp = self.flann_match(p1,interactive=interactive)
         if len(p0_matches) >= len(p1_matches):
-            back,back_kp,back_matches,back_row,back_col = p0,p0_kp,p0_matches,p0_rows,p0_cols
-            front,front_kp,front_matches,front_row,front_col = p1,p1_kp,p1_matches,p1_rows,p1_cols
+            back,back_kp,back_matches,back_row,back_col,back_lines = p0,p0_kp,p0_matches,p0_rows,p0_cols,p0_lines
+            front,front_kp,front_matches,front_row,front_col,front_lines = p1,p1_kp,p1_matches,p1_rows,p1_cols,p1_lines
         else:
-            front,front_kp,front_matches,front_row,front_col  = p0,p0_kp,p0_matches,p0_rows,p0_cols
-            back,back_kp,back_matches,back_row,back_col= p1,p1_kp,p1_matches,p1_rows,p1_cols
+            front,front_kp,front_matches,front_row,front_col,front_lines  = p0,p0_kp,p0_matches,p0_rows,p0_cols,p0_lines
+            back,back_kp,back_matches,back_row,back_col,back_lines= p1,p1_kp,p1_matches,p1_rows,p1_cols,p1_lines
         # For each match...
         points = []
         for mat in back_matches:
@@ -63,7 +66,9 @@ class EmblemMatcher:
             (x2, y2) = back_kp[img2_idx].pt
 
             points.append((x2, y2))
+        flip_back = False
         for p in points:
             if not (0 <= p[0] <= int(back_col / 2)):
-                return True
-        return False
+                flip_back = True
+                break
+        return flip_back,front,front_lines,back,back_lines
