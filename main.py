@@ -8,6 +8,7 @@ import numpy
 from CtpnPreprocessor import CtpnPreProcessor
 from EmblemMatcher import EmblemMatcher
 from card_crop import display_result
+from cnn_rnn_ctc.test_crnn import Test_CRNN
 from label_processing import is_correct_crop
 from perspective_zoom import perspective_zoomed_image
 from text_seg import get_text_img
@@ -29,8 +30,10 @@ def click_event(event, x, y, flags, params):
 
 
 # text_matcher = FrontTextMatcher()
+ctc = Test_CRNN(batch_size=1)
 preprocessor = CtpnPreProcessor()
 emblem_matcher = EmblemMatcher()
+
 
 interactive = True
 path = r'D:\citizenIdData\Train_DataSet'
@@ -77,6 +80,7 @@ for file in files:
             front = rotate_image(front, 180)
             front_lines = list(
                 map(lambda x: x.vertical_flip(back.shape[0], back.shape[1]), front_lines))
+        ctc.get_text_img(front, back)
         if interactive:
             for r in back_lines:
                 # (y1,x1,y2,x2)
@@ -91,6 +95,5 @@ for file in files:
             cv2.setMouseCallback('front', click_event)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-            get_text_img(front,back)
     else:
         continue
