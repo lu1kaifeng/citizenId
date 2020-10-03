@@ -38,7 +38,7 @@ emblem_matcher = EmblemMatcher()
 interactive = True
 path = r'D:\citizenIdData\Train_DataSet'
 files = [f for f in listdir(path) if isfile(join(path, f)) and re.match('.*\\.jpg', f)]
-# files=['0019905ad50e451e943d05ba5e090f72.jpg']
+#files=['00b4b438dbee4a35a42c8c9e23d22286.jpg']
 for file in files:
     img = cv2.imread(path + '\\' + file)
     sides, imgs = display_result(img, False)
@@ -80,7 +80,8 @@ for file in files:
             front = rotate_image(front, 180)
             front_lines = list(
                 map(lambda x: x.vertical_flip(back.shape[0], back.shape[1]), front_lines))
-        ctc.get_text_img(front, back)
+        cv2.imwrite('data/back.jpg', back)
+        ctc.get_text_img(cv2.cvtColor(front, cv2.COLOR_BGR2GRAY), cv2.cvtColor(back,cv2.COLOR_BGR2GRAY))
         if interactive:
             for r in back_lines:
                 # (y1,x1,y2,x2)

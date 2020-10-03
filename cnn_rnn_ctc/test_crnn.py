@@ -6,7 +6,8 @@ from cnn_rnn_ctc.crnn import CRNN
 from cnn_rnn_ctc.utils.net_cfg_parser import parser_cfg_file
 
 class Test_CRNN(object):
-    def __init__(self, batch_size=None):
+    def __init__(self, batch_size=None,interactive=False):
+        self.interactive = interactive
         net_params, train_params = parser_cfg_file('./net.cfg')
         self._model_save_path = str(net_params['model_load_path'])
         self.input_img_height = int(net_params['input_height'])
@@ -46,7 +47,7 @@ class Test_CRNN(object):
 
         # print(np.shape(img))
         # print(img_path_list[i])
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         resized_img = self._resize_img(img)
         reshape_img = resized_img.reshape([1, self.input_img_height, self.input_img_width, 1])
         img_norm = reshape_img / 255 * 2 - 1
@@ -96,6 +97,11 @@ class Test_CRNN(object):
             "address": front[146:201, 78:300],
             "id": front[238:281, 123:385]
         }
+        if self.interactive:
+            for k, v in id_dict.items():
+                cv2.imshow(k,v)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         for k, v in id_dict.items():
             id_dict[k] = self.test_img(v)
         print(id_dict)
