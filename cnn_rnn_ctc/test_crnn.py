@@ -90,12 +90,12 @@ class Test_CRNN(object):
         id_dict = {
             "pd": back[208:242, 98:338],
             "period": back[245:280, 103:360],
-            "name": front[38:74, 71:153],
-            "sex": front[76:109, 76:113],
-            "ethnic": front[74:107, 176:245],
-            "birth": front[112:146, 74:243],
-            "address": front[146:201, 78:300],
-            "id": front[238:281, 123:385]
+            "name": front[48:84, 71:153],
+            "sex": front[86:119, 76:113],
+            "ethnic": front[84:117, 176:245],
+            "birth": front[122:156, 74:243],
+            "address": front[156:211, 78:300],
+            "id": front[240:282, 123:385]
         }
         if self.interactive:
             for k, v in id_dict.items():

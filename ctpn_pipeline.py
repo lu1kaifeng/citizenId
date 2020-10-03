@@ -80,7 +80,7 @@ for file in files:
             front = rotate_image(front, 180)
             front_lines = list(
                 map(lambda x: x.vertical_flip(back.shape[0], back.shape[1]), front_lines))
-        cv2.imwrite('data/back.jpg', back)
+        #cv2.imwrite('data/back.jpg', back)
         ctc.get_text_img(cv2.cvtColor(front, cv2.COLOR_BGR2GRAY), cv2.cvtColor(back,cv2.COLOR_BGR2GRAY))
         if interactive:
             for r in back_lines:
