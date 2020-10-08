@@ -153,6 +153,6 @@ def resnet50(image_input):
     # x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b')
     # x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c')
 
-    # model = Model(input, x, name='resnet50')
+    # models = Model(input, x, name='resnet50')
 
     return x

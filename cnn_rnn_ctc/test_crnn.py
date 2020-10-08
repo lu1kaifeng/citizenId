@@ -18,7 +18,7 @@ class Test_CRNN(object):
             self.test_batch_size = batch_size
 
         # 加载label onehot
-        f = open('./data/word_onehot.txt', 'r',encoding='utf-8')
+        f = open('./data/citizen_id_words.txt', 'r')
         data = f.read()
         words_onehot_dict = eval(data)
         self.words_list = list(words_onehot_dict.keys())
@@ -86,16 +86,22 @@ class Test_CRNN(object):
             words.append(seq_words)
         return words
 
-    def get_text_img(self,front: np.ndarray, back: np.ndarray):
+    def get_text_img(self,front: np.ndarray, back: np.ndarray)->dict:
+        def arrange_lines(img: np.ndarray):
+            height = img.shape[0]
+            line_height = int(height / 3)
+            return np.concatenate(
+                (img[0:line_height, :], img[line_height:line_height * 2, :], img[line_height * 2:line_height * 3, :]),
+                axis=1)
         id_dict = {
-            "pd": back[208:242, 98:338],
-            "period": back[245:280, 103:360],
+            "pd": back[204:240, 169:388],
+            "period": back[245:280, 168:363],
             "name": front[48:84, 71:153],
             "sex": front[86:119, 76:113],
             "ethnic": front[84:117, 176:245],
-            "birth": front[122:156, 74:243],
-            "address": front[156:211, 78:300],
-            "id": front[240:282, 123:385]
+            "birth": front[112:146, 74:243],
+            "address": arrange_lines(front[151:225, 78:300]),
+            "id": front[230:272, 123:385]
         }
         if self.interactive:
             for k, v in id_dict.items():
@@ -104,7 +110,7 @@ class Test_CRNN(object):
             cv2.destroyAllWindows()
         for k, v in id_dict.items():
             id_dict[k] = self.test_img(v)
-        print(id_dict)
+        return id_dict
 
 
     def _resize_img(self, img):
@@ -113,6 +119,8 @@ class Test_CRNN(object):
         :param img:
         :return:
         """
+        if len(np.shape(img)) is 3:
+            img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
         height, width = np.shape(img)
 
         if width > self.input_img_width:

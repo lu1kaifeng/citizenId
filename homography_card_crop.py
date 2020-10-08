@@ -67,8 +67,13 @@ class HomographyPreprocessor:
         return card
 
     def crop(self, input_img):
-        return cv2.cvtColor(self._detect(self.front_tem_kp, self.front_tem_des, self.front_tem, input_img), cv2.COLOR_BGR2GRAY), cv2.cvtColor(self._detect(
+# return cv2.cvtColor(self._detect(self.front_tem_kp, self.front_tem_des, self.front_tem, input_img), cv2.COLOR_BGR2GRAY), cv2.cvtColor(self._detect(
+#     self.back_tem_kp,
+#     self.back_tem_des,
+#     self.back_tem,
+#     input_img), cv2.COLOR_BGR2GRAY)
+        return self._detect(self.front_tem_kp, self.front_tem_des, self.front_tem, input_img), self._detect(
             self.back_tem_kp,
             self.back_tem_des,
             self.back_tem,
-            input_img), cv2.COLOR_BGR2GRAY)
+            input_img)

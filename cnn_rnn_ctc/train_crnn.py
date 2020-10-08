@@ -24,7 +24,7 @@ class Train_CRNN(object):
             ckpt = tf.train.checkpoint_exists(self._model_save_path)
             if ckpt:
                 print('Checkpoint is valid...')
-                f = open('./model/train_step.txt', 'r')
+                f = open('./models/train_step.txt', 'r')
                 step = f.readline()
                 self._start_step = int(step)
                 f.close()
@@ -71,7 +71,7 @@ class Train_CRNN(object):
         with tf.Session() as sess:
             if self._pre_train:
                 saver.restore(sess, self._model_save_path)
-                print('load model from:', self._model_save_path)
+                print('load models from:', self._model_save_path)
             else:
                 sess.run(tf.global_variables_initializer())
 
@@ -113,12 +113,12 @@ class Train_CRNN(object):
 
                 if step%100 == 0:
 
-                    self.train_logger.info('saving model...')
-                    f = open('./model/train_step.txt', 'w')
+                    self.train_logger.info('saving models...')
+                    f = open('./models/train_step.txt', 'w')
                     f.write(str(self._start_step + step))
                     f.close()
                     save_path = saver.save(sess, self._model_save_path)
-                    self.train_logger.info('model saved at %s' % save_path)
+                    self.train_logger.info('models saved at %s' % save_path)
 
                 if epoch != data.epoch:
                     epoch = data.epoch
